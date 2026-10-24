@@ -1,0 +1,82 @@
+// Full-featured declarative pipeline: options, parameters, env, triggers, when, input, post.
+// Needs plugins: junit, ws-cleanup, timestamper
+pipeline {
+    agent any
+
+    options {
+        timeout(time: 30, unit: 'MINUTES')
+        buildDiscarder(logRotator(numToKeepStr: '20'))
+        disableConcurrentBuilds()
+        timestamps()
+    }
+
+    parameters {
+        string(name: 'VERSION', defaultValue: '1.0.0', description: 'Release version')
+        choice(name: 'ENV', choices: ['dev', 'staging', 'prod'], description: 'Target environment')
+        booleanParam(name: 'RUN_TESTS', defaultValue: true, description: 'Run tests?')
+    }
+
+    environment {
+        APP_NAME = 'my-app'
+        IMAGE    = "registry.example.com/${APP_NAME}:${params.VERSION}"
+    }
+
+    triggers {
+        pollSCM('H/5 * * * *')
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Build') {
+            steps {
+                sh 'echo "Building ${APP_NAME} version ${VERSION}"'
+                sh 'docker build -t ${IMAGE} .'
+            }
+        }
+
+        stage('Test') {
+            when {
+                expression { params.RUN_TESTS }
+            }
+            steps {
+                sh 'make test'
+            }
+            post {
+                always {
+                    junit 'reports/**/*.xml'
+                }
+            }
+        }
+
+        stage('Deploy to Prod') {
+            when {
+                allOf {
+                    branch 'main'
+                    expression { params.ENV == 'prod' }
+                }
+            }
+            steps {
+                input message: 'Deploy to production?', ok: 'Deploy'
+                sh './deploy.sh prod'
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Pipeline succeeded'
+            archiveArtifacts artifacts: 'dist/**', fingerprint: true
+        }
+        failure {
+            echo 'Pipeline failed'
+        }
+        always {
+            cleanWs()
+        }
+    }
+}

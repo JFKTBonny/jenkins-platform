@@ -1,0 +1,15 @@
+configuration-as-code
+workflow-aggregator
+pipeline-stage-view
+git
+github-branch-source
+docker-workflow
+kubernetes
+credentials-binding
+matrix-auth
+role-strategy
+authorize-project
+audit-trail
+junit
+ws-cleanup
+timestamper

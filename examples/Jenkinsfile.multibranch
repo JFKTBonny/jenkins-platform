@@ -1,0 +1,23 @@
+// Branch-, PR- and tag-specific behavior in a Multibranch pipeline
+pipeline {
+    agent any
+
+    stages {
+        stage('Deploy Staging') {
+            when { branch 'develop' }
+            steps { sh './deploy.sh staging' }
+        }
+        stage('Deploy Prod') {
+            when { branch 'main' }
+            steps { sh './deploy.sh prod' }
+        }
+        stage('PR Checks') {
+            when { changeRequest() }
+            steps { sh 'make lint test' }
+        }
+        stage('Release Tag') {
+            when { buildingTag() }
+            steps { sh './release.sh' }
+        }
+    }
+}

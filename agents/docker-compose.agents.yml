@@ -1,0 +1,19 @@
+# Local inbound agent on the same Docker network as the controller.
+# Start with: make agents   (needs AGENT_SECRET in .env)
+services:
+  agent1:
+    image: jenkins/inbound-agent:latest-jdk21
+    container_name: agent1
+    restart: unless-stopped
+    environment:
+      JENKINS_URL: "http://jenkins:8080"
+      JENKINS_AGENT_NAME: "agent1"
+      JENKINS_SECRET: "${AGENT_SECRET}"
+      JENKINS_AGENT_WORKDIR: "/home/jenkins/agent"
+    networks:
+      - jenkins-net
+
+networks:
+  jenkins-net:
+    external: true
+    name: jenkins-net

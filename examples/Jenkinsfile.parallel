@@ -1,0 +1,26 @@
+// Parallel stages
+pipeline {
+    agent any
+
+    stages {
+        stage('Tests') {
+            parallel {
+                stage('Unit') {
+                    steps {
+                        sh 'make unit-test'
+                    }
+                }
+                stage('Integration') {
+                    steps {
+                        sh 'make integration-test'
+                    }
+                }
+                stage('Lint') {
+                    steps {
+                        sh 'make lint'
+                    }
+                }
+            }
+        }
+    }
+}

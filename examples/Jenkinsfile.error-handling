@@ -1,0 +1,28 @@
+// Retry, timeout and allowing a step to fail without failing the build
+pipeline {
+    agent any
+
+    stages {
+        stage('Flaky Step') {
+            steps {
+                retry(3) {
+                    sh './flaky-script.sh'
+                }
+            }
+        }
+        stage('Time-boxed') {
+            steps {
+                timeout(time: 5, unit: 'MINUTES') {
+                    sh './long-task.sh'
+                }
+            }
+        }
+        stage('Allow Failure') {
+            steps {
+                catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
+                    sh './optional-check.sh'
+                }
+            }
+        }
+    }
+}

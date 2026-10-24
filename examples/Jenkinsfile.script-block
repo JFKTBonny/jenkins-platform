@@ -1,0 +1,27 @@
+// Groovy logic inside a declarative pipeline
+pipeline {
+    agent any
+
+    stages {
+        stage('Dynamic') {
+            steps {
+                script {
+                    def services = ['api', 'web', 'worker']
+                    for (svc in services) {
+                        echo "Building ${svc}"
+                        sh "docker build -t ${svc} ./${svc}"
+                    }
+
+                    def commit = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
+                    echo "Commit: ${commit}"
+                    env.GIT_SHORT = commit
+                }
+            }
+        }
+        stage('Use It') {
+            steps {
+                echo "Short commit is ${env.GIT_SHORT}"
+            }
+        }
+    }
+}

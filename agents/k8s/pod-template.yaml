@@ -1,0 +1,31 @@
+# Restricted build pod for the Kubernetes plugin.
+# Use it from a Jenkinsfile with: agent { kubernetes { yamlFile 'agents/k8s/pod-template.yaml' } }
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    jenkins: agent
+spec:
+  automountServiceAccountToken: false
+  securityContext:
+    runAsUser: 1000
+    runAsGroup: 1000
+    fsGroup: 1000
+    runAsNonRoot: true
+  containers:
+    - name: build
+      image: maven:3.9-eclipse-temurin-21
+      command: ["sleep"]
+      args: ["infinity"]
+      resources:
+        requests:
+          cpu: "500m"
+          memory: "1Gi"
+        limits:
+          cpu: "2"
+          memory: "4Gi"
+      securityContext:
+        allowPrivilegeEscalation: false
+        readOnlyRootFilesystem: false
+        capabilities:
+          drop: ["ALL"]

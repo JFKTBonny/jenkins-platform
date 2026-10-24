@@ -1,0 +1,19 @@
+# API token policy and build authorization.
+# The "security:" root key must appear ONLY in this file.
+security:
+  apiToken:
+    creationOfLegacyTokenEnabled: false
+    tokenGenerationOnCreationEnabled: false
+    usageStatisticsEnabled: true
+
+  # Build authorization (Authorize Project plugin).
+  # By default builds run as SYSTEM. Enabling the block below makes builds run
+  # as the user who started them. Webhook/SCM-triggered builds then run as
+  # "anonymous", which has no permissions in this setup - so before enabling,
+  # create a service account and grant it Job/Build, Job/Read and Agent/Build,
+  # or configure "Authorization" per job.
+  #
+  # queueItemAuthenticator:
+  #   authenticators:
+  #     - global:
+  #         strategy: "triggeringUsersAuthorizationStrategy"

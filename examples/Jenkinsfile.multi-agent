@@ -1,0 +1,31 @@
+// A different agent per stage
+pipeline {
+    agent none
+
+    stages {
+        stage('Backend') {
+            agent {
+                docker { image 'maven:3.9-eclipse-temurin-21' }
+            }
+            steps {
+                sh 'mvn -B clean package'
+            }
+        }
+        stage('Frontend') {
+            agent {
+                docker { image 'node:20-alpine' }
+            }
+            steps {
+                sh 'npm ci && npm run build'
+            }
+        }
+        stage('Linux-only Task') {
+            agent {
+                label 'linux'
+            }
+            steps {
+                sh 'uname -a'
+            }
+        }
+    }
+}

@@ -1,0 +1,21 @@
+// Scripted pipeline (older, more flexible). Prefer declarative for most work.
+node('linux') {
+    try {
+        stage('Checkout') {
+            checkout scm
+        }
+        stage('Build') {
+            sh 'make build'
+        }
+        stage('Test') {
+            sh 'make test'
+        }
+        currentBuild.result = 'SUCCESS'
+    } catch (err) {
+        currentBuild.result = 'FAILURE'
+        throw err
+    } finally {
+        echo "Result: ${currentBuild.result}"
+        cleanWs()
+    }
+}

@@ -1,0 +1,28 @@
+# Jenkins URL, trusted shared library, audit trail.
+# The "unclassified:" root key must appear ONLY in this file.
+unclassified:
+  location:
+    url: "${JENKINS_URL}"
+
+  globalLibraries:
+    libraries:
+      - name: "my-shared-lib"
+        defaultVersion: "main"
+        implicit: false
+        allowVersionOverride: false
+        retriever:
+          modernSCM:
+            scm:
+              git:
+                remote: "https://github.com/your-org/jenkins-shared-lib.git"
+                credentialsId: "github-creds"
+
+  audit-trail:
+    logBuildCause: true
+    logCredentialsUsage: true
+    pattern: ".*/(?:configSubmit|doDelete|postBuildResult|enable|disable|cancelQueue|stop|toggleLogKeep|doWipeOutWorkspace|createItem|createView|toggleOffline|cancelQuietDown|quietDown|restart|exit|safeExit)/?.*"
+    loggers:
+      - logFile:
+          log: "/var/jenkins_home/audit-%g.log"
+          limit: 10
+          count: 5

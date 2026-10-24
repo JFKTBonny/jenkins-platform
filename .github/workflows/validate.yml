@@ -1,0 +1,25 @@
+name: Validate
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Lint YAML
+        run: |
+          pip install yamllint
+          yamllint -d relaxed controller/casc agents docker-compose.yml .github
+
+      - name: Lint shell scripts
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y shellcheck
+          shellcheck scripts/*.sh
+
+      - name: Build controller image
+        run: docker build -t my-jenkins:ci controller

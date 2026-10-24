@@ -1,0 +1,20 @@
+// Run the whole pipeline inside a Docker image.
+// Needs the Docker Pipeline plugin and Docker installed on the agent.
+pipeline {
+    agent {
+        docker {
+            image 'node:20-alpine'
+            args '-v $HOME/.npm:/root/.npm'
+        }
+    }
+
+    stages {
+        stage('Build') {
+            steps {
+                sh 'node --version'
+                sh 'npm ci'
+                sh 'npm run build'
+            }
+        }
+    }
+}

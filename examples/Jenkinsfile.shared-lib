@@ -1,0 +1,20 @@
+// Using the trusted shared library (repo: jenkins-shared-lib)
+@Library('my-shared-lib') _
+import org.example.Utils
+
+pipeline {
+    agent { label 'linux' }
+
+    stages {
+        stage('Build') {
+            steps {
+                script {
+                    def utils = new Utils(this)
+                    echo "Commit: ${utils.shortCommit()}"
+                    buildApp(name: 'frontend', lang: 'node')
+                    utils.notify('Build finished')
+                }
+            }
+        }
+    }
+}

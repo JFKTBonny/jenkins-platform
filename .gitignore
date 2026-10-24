@@ -1,0 +1,18 @@
+# Secrets
+.env
+*.key
+secrets/
+
+# Backups
+backups/
+*.tar.gz
+*.gpg
+
+# Local Jenkins data and caches
+jenkins_home/
+.cache/
+
+# Editor / OS
+.idea/
+.vscode/
+.DS_Store

@@ -1,0 +1,20 @@
+// Scheduled and upstream triggers. H spreads load across the hour.
+pipeline {
+    agent any
+
+    triggers {
+        // Nightly at around 2 AM
+        cron('H 2 * * *')
+
+        // Run after another job succeeds
+        upstream(upstreamProjects: 'build-library', threshold: hudson.model.Result.SUCCESS)
+    }
+
+    stages {
+        stage('Run') {
+            steps {
+                echo 'Triggered build'
+            }
+        }
+    }
+}

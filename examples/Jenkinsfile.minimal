@@ -1,0 +1,23 @@
+// Minimal declarative pipeline. Use 'bat' instead of 'sh' on Windows agents.
+pipeline {
+    agent any
+
+    stages {
+        stage('Build') {
+            steps {
+                echo 'Building...'
+                sh 'make build'
+            }
+        }
+        stage('Test') {
+            steps {
+                sh 'make test'
+            }
+        }
+        stage('Deploy') {
+            steps {
+                sh 'make deploy'
+            }
+        }
+    }
+}

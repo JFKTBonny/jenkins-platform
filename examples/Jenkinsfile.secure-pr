@@ -1,0 +1,27 @@
+// Secrets are only used on main, never for pull requests.
+// Also set Branch Sources -> Discover pull requests from forks -> Trust:
+// "From users with Admin or Write permission"
+pipeline {
+    agent any
+
+    stages {
+        stage('Test') {
+            steps {
+                sh 'make test'
+            }
+        }
+        stage('Publish') {
+            when {
+                allOf {
+                    not { changeRequest() }
+                    branch 'main'
+                }
+            }
+            steps {
+                withCredentials([string(credentialsId: 'publish-token', variable: 'TOKEN')]) {
+                    sh './publish.sh'
+                }
+            }
+        }
+    }
+}

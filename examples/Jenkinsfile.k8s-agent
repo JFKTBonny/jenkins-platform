@@ -1,0 +1,18 @@
+// Restricted, ephemeral Kubernetes build pod. Needs the Kubernetes plugin
+// and a configured Kubernetes cloud. Pod spec: agents/k8s/pod-template.yaml
+pipeline {
+    agent {
+        kubernetes {
+            yamlFile 'agents/k8s/pod-template.yaml'
+            defaultContainer 'build'
+        }
+    }
+
+    stages {
+        stage('Build') {
+            steps {
+                sh 'mvn -B clean package'
+            }
+        }
+    }
+}

@@ -1,0 +1,17 @@
+// Trigger another job with parameters and wait for it
+pipeline {
+    agent any
+
+    stages {
+        stage('Call Downstream') {
+            steps {
+                build job: 'deploy-job',
+                      parameters: [
+                          string(name: 'VERSION', value: '1.2.3'),
+                          string(name: 'ENV', value: 'staging')
+                      ],
+                      wait: true
+            }
+        }
+    }
+}
